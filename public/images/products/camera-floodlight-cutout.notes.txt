@@ -1,0 +1,7 @@
+Source: camera-floodlight.jpg (owner-supplied original, retained).
+Edited with the built-in image generation tool for background removal.
+Prompt: Remove packaging, room, foam, hand and loose background strand.
+Preserve the black camera/floodlight assembly, LED sections, camera heads,
+sensor, antennas, perspective and proportions. Isolate the complete product
+on transparent alpha, centred on a square canvas without clipping.
+No text, shadow or other objects.
