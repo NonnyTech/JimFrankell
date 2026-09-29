@@ -5,7 +5,7 @@ export const businessConfig = {
   websiteUrl: "https://jimfrankell.com",
   googleSiteVerification: "",
   shortName: "Jim-Frankell",
-  logo: "/favicon.svg",
+  logo: "/images/brand/jf-shield-green.svg",
   whatsappNumber: "2348061552184",
   phone: "08061552184",
   email: "jimfrank6@gmail.com",

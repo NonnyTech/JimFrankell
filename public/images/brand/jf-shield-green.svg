@@ -1,0 +1,10 @@
+<svg xmlns="http://www.w3.org/2000/svg" viewBox="0 0 200 230" role="img" aria-labelledby="title">
+  <title id="title">Jim-Frankell Ltd JF shield</title>
+  <path fill="#157b50" d="M100 3C69 18 36 25 4 28v128c0 32 42 55 96 71 54-16 96-39 96-71V28C164 25 131 18 100 3Z"/>
+  <path fill="none" stroke="#fff" stroke-width="5" d="M100 12C70 26 42 32 13 36v120c0 26 36 47 87 62 51-15 87-36 87-62V36C158 32 130 26 100 12Z"/>
+  <g fill="#fff" font-family="Georgia, 'Times New Roman', serif">
+    <text x="66" y="115" font-size="98">J</text>
+    <text x="94" y="157" font-size="94">F</text>
+    <text x="100" y="182" font-size="13" text-anchor="middle">Jim-Frankell Ltd</text>
+  </g>
+</svg>

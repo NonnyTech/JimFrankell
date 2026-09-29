@@ -22,7 +22,7 @@ import { WhatsAppButton } from "./UI.jsx";
 export function Logo() {
   return (
     <Link to="/" className="logo">
-      <img src={b.logo} alt="" />
+      <img src={b.logo} alt="" width="48" height="58" />
       <span>
         {b.shortName}
         <small>SOLAR & SECURITY & POWER</small>
