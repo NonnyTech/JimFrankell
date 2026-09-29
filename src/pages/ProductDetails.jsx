@@ -20,6 +20,13 @@ export default function ProductDetails() {
   const [image, setImage] = useState(0);
   const { add } = useCart();
   if (!p) return <NotFound />;
+  const buyingChecks = {
+    "Solar Panels": ["Panel wattage and dimensions", "Compatibility with your inverter and mounting location"],
+    "Inverters": ["Rated output and the appliances you need to power", "Battery voltage and solar panel compatibility"],
+    "Solar Security Cameras": ["Wi-Fi or SIM connectivity for your location", "Working lenses, recording storage and installation position"],
+    "Spy Cameras": ["Power supply and recording storage", "Connectivity and suitability for your intended location"],
+  }[p.category] || ["Model specifications and compatibility"];
+
   return (
     <div className="container section">
       <div className="breadcrumbs">
@@ -89,7 +96,7 @@ export default function ProductDetails() {
               disabled={!p.inStock}
               onClick={() => add(p, quantity)}
             >
-              <ShoppingBag size={18} /> Add to cart
+              <ShoppingBag size={18} /> Add to quote
             </button>
           </div>
           {p.inStock && (
@@ -97,7 +104,7 @@ export default function ProductDetails() {
               className="button outline full"
               message={cartMessage([{ product: p, quantity }])}
             >
-              Order on WhatsApp
+              Get a quote on WhatsApp
             </WhatsAppButton>
           )}
           <WhatsAppButton
@@ -116,6 +123,9 @@ export default function ProductDetails() {
         <section>
           <h2>Full description</h2>
           <p>{p.description}</p>
+          <h2>Before you choose</h2>
+          <p>Ask our team to confirm these details for the available model:</p>
+          <ul>{buyingChecks.map((check) => <li key={check}>{check}</li>)}</ul>
           <h2>Warranty</h2>
           <p>{p.warranty}</p>
         </section>

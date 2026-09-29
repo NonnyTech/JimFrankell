@@ -27,8 +27,8 @@ test("supplied camera photos appear on home, category and detail pages with hone
     "src",
     "/images/products/jf/camera-floodlight-cutout.webp",
   );
-  await page.getByRole("button", { name: "Add to cart", exact: true }).click();
-  await page.getByRole("link", { name: "Cart, 1 items" }).click();
+  await page.getByRole("button", { name: "Add to quote", exact: true }).click();
+  await page.getByRole("link", { name: "Quote basket, 1 items" }).click();
   await expect(page.locator(".order-summary")).toContainText(
     "Quotation required",
   );

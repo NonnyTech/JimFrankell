@@ -51,7 +51,7 @@ test("cart message includes quantities, unit prices, subtotals and exact total",
   assert.ok(message.includes(`ORDER TOTAL: ${formatCurrency(2300000)}`));
   assert.ok(
     message.includes(
-      "Please confirm availability, delivery cost and next steps.",
+      "Please confirm availability, warranty, delivery cost and next steps.",
     ),
   );
 });

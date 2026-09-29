@@ -36,9 +36,9 @@ export default function ProductCard({ product: p }) {
           <button
             disabled={!p.inStock}
             onClick={() => add(p)}
-            aria-label={`Add ${p.name} to cart`}
+            aria-label={`Add ${p.name} to quote basket`}
           >
-            <Plus size={17} /> Add to cart
+            <Plus size={17} /> Add to quote
           </button>
         </div>
         <WhatsAppButton className="product-enquiry" message={productMessage(p)}>

@@ -2542,3 +2542,8 @@ textarea {
 /* JF shield: preserve proportions and transparent edges on both backgrounds. */
 .logo img, footer .logo img { width: 44px; height: 52px; object-fit: contain; flex-shrink: 0; }
 @media (max-width: 580px) { .logo img, footer .logo img { width: 36px; height: 44px; } }
+
+.quote-fields { display: flex !important; flex-direction: column; gap: 8px; margin: 24px 0; }
+.quote-fields label { font-size: .85rem; font-weight: 600; margin-top: 8px; }
+.quote-fields input, .quote-fields select, .quote-fields textarea { width: 100%; min-width: 0; padding: 12px; border: 1px solid #cbd8ce; border-radius: 8px; background: white; color: #102c27; font: inherit; }
+.quote-fields textarea { resize: vertical; }

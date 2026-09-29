@@ -14,7 +14,7 @@ test("JF products support category discovery, galleries and enquiry carts", asyn
     "src",
     "/images/products/jf/spy-clock-cutout.webp",
   );
-  await page.getByRole("button", { name: "Add to cart", exact: true }).click();
+  await page.getByRole("button", { name: "Add to quote", exact: true }).click();
   await page.goto("/cart");
   await expect(page.locator(".order-summary")).toContainText(
     "Quotation required",
@@ -56,3 +56,20 @@ test("owner videos load on demand and play on product pages", async ({
     await expect(page.locator(".detail-price")).toHaveText("Price on request");
   }
 });
+
+ test("quote basket includes delivery and installation details in WhatsApp", async ({page}) => {
+  await page.goto("/product/jf-solar-panel");
+  await page.getByRole("button", {name: "Add to quote", exact: true}).click();
+  await page.goto("/cart");
+  await page.getByLabel("Delivery area (optional)").fill("Ikeja, Lagos");
+  await page.getByLabel("Do you need installation?").selectOption("Yes, please include installation");
+  await page.getByLabel("Anything else? (optional)").fill("Please advise for a two-bedroom home & office.");
+  const link = await page.getByRole("link", {name: "Request quote on WhatsApp"}).getAttribute("href");
+  const message = new URL(link).searchParams.get("text");
+  expect(message).toContain("JF Solar Panel");
+  expect(message).toContain("Delivery area: Ikeja, Lagos");
+  expect(message).toContain("Installation: Yes, please include installation");
+  expect(message).toContain("home & office.");
+  await page.setViewportSize({width:390,height:844});
+  expect(await page.evaluate(() => document.documentElement.scrollWidth <= innerWidth)).toBe(true);
+ });

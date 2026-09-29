@@ -45,7 +45,7 @@ export function CartProvider({ children }) {
   const add = (product, quantity = 1) => {
     if (!product.inStock) return;
     setCart((c) => restoreCart([...c, { id: product.id, quantity }]));
-    notify(`${product.name} added to cart`);
+    notify(`${product.name} added to quote basket`);
   };
   const update = (id, quantity) =>
     setCart((c) =>
@@ -57,11 +57,11 @@ export function CartProvider({ children }) {
     );
   const remove = (id) => {
     setCart((c) => c.filter((i) => i.id !== id));
-    notify("Product removed from cart");
+    notify("Product removed from quote basket");
   };
   const clear = () => {
     setCart([]);
-    notify("Cart cleared");
+    notify("Quote basket cleared");
   };
   const items = cart.map((i) => ({
     ...i,

@@ -9,6 +9,6 @@ export function whatsappUrl(message = enquiryMessage) {
 }
 export const productMessage = (product) =>
   `Hello ${b.shortName},\n\nI'm interested in:\n\nProduct: ${product.name}\nPrice: ${money(product.price)}\n\nPlease send me more information about availability, warranty and delivery.\n\nThank you.`;
-export function cartMessage(items) {
-  return `Hello ${b.shortName},\n\nI'm interested in purchasing the following products:\n\n${items.map(({ product: p, quantity }, i) => `${i + 1}. ${p.name}\nQuantity: ${quantity}\nUnit Price: ${money(p.price)}\nSubtotal: ${money(p.price == null ? null : p.price * quantity)}`).join("\n\n")}\n\nORDER TOTAL: ${items.some((i) => i.product.price == null) ? "Quotation required (includes items with price on request)" : money(items.reduce((sum, i) => sum + i.product.price * i.quantity, 0))}\n\nPlease confirm availability, delivery cost and next steps.\n\nThank you.`;
+export function cartMessage(items, details = {}) {
+  return `Hello ${b.shortName},\n\nPlease send me a quote for the following products:\n\n${items.map(({ product: p, quantity }, i) => `${i + 1}. ${p.name}\nQuantity: ${quantity}\nUnit Price: ${money(p.price)}\nSubtotal: ${money(p.price == null ? null : p.price * quantity)}`).join("\n\n")}\n\nORDER TOTAL: ${items.some((i) => i.product.price == null) ? "Quotation required (includes items with price on request)" : money(items.reduce((sum, i) => sum + i.product.price * i.quantity, 0))}${details.location?.trim() ? `\n\nDelivery area: ${details.location.trim()}` : ""}${details.installation ? `\nInstallation: ${details.installation}` : ""}${details.notes?.trim() ? `\nAdditional notes: ${details.notes.trim()}` : ""}\n\nPlease confirm availability, warranty, delivery cost and next steps.\n\nThank you.`;
 }
