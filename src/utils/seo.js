@@ -73,7 +73,7 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
     origin && (info[path] || product)
       ? origin + (path === "/" ? "/" : path)
       : "";
-  const image = product?.images[0] || "/images/hero/solar-family.png";
+  const image = product?.images[0] || "/images/brand/jf-share-logo.png";
   const graph = [];
   if (origin && indexable) {
     const businessId = origin + "/#business";
@@ -81,6 +81,7 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
       "@type": "Store",
       "@id": businessId,
       name: b.companyName,
+      logo: origin + "/images/brand/jf-share-logo.png",
       url: origin + "/",
       telephone: `+${b.whatsappNumber}`,
       email: b.email,
@@ -157,6 +158,10 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
   return {
     title: `${title} | ${b.companyName}`,
     description,
+    shareTitle: product ? `${product.name} | ${b.companyName}` : `${b.companyName} | Solar & Security Solutions`,
+    imageAlt: product ? product.name : `${b.companyName} green JF shield logo`,
+    imageType: product ? "" : "image/png",
+    imageSize: product ? null : 600,
     canonical,
     image: origin ? origin + image : "",
     robots:
@@ -182,12 +187,12 @@ export function seoHead(seo) {
     `<title>${escapeHTML(seo.title)}</title>` +
     meta("description", seo.description) +
     meta("robots", seo.robots) +
-    meta("og:title", seo.title, true) +
+    meta("og:title", seo.shareTitle || seo.title, true) +
     meta("og:description", seo.description, true) +
     meta("og:type", "website", true) +
     meta("og:site_name", b.companyName, true) +
     meta("og:locale", "en_NG", true) +
-    meta("twitter:card", "summary_large_image") +
+    meta("twitter:card", seo.imageSize ? "summary" : "summary_large_image") +
     meta("twitter:title", seo.title) +
     meta("twitter:description", seo.description) +
     (seo.canonical
@@ -195,7 +200,11 @@ export function seoHead(seo) {
         meta("og:url", seo.canonical, true)
       : "") +
     (seo.image
-      ? meta("og:image", seo.image, true) + meta("twitter:image", seo.image)
+      ? meta("og:image", seo.image, true) +
+        meta("og:image:alt", seo.imageAlt || seo.title, true) +
+        (seo.imageType ? meta("og:image:type", seo.imageType, true) : "") +
+        (seo.imageSize ? meta("og:image:width", seo.imageSize, true) + meta("og:image:height", seo.imageSize, true) : "") +
+        meta("twitter:image", seo.image) + meta("twitter:image:alt", seo.imageAlt || seo.title)
       : "") +
     (seo.verification
       ? meta("google-site-verification", seo.verification)
