@@ -73,7 +73,7 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
     origin && (info[path] || product)
       ? origin + (path === "/" ? "/" : path)
       : "";
-  const image = product?.images[0] || "/images/brand/jf-share-logo.png";
+  const image = product?.images[0] || "/images/brand/jf-share-logo-compact.png";
   const graph = [];
   if (origin && indexable) {
     const businessId = origin + "/#business";
@@ -161,7 +161,7 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
     shareTitle: product ? `${product.name} | ${b.companyName}` : `${b.companyName} | Solar & Security Solutions`,
     imageAlt: product ? product.name : `${b.companyName} green JF shield logo`,
     imageType: product ? "" : "image/png",
-    imageSize: product ? null : 600,
+    imageSize: product ? null : 256,
     canonical,
     image: origin ? origin + image : "",
     robots:
