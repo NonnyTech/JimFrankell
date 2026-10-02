@@ -1,7 +1,7 @@
 import { useState } from "react";
 import { Link, useParams } from "react-router-dom";
 import { ShoppingBag, ShieldCheck } from "lucide-react";
-import { products } from "../data/products.js";
+import { useCatalog } from "../context/CatalogContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { formatCurrency as money } from "../utils/currency.js";
 import { cartMessage, productMessage } from "../utils/whatsapp.js";
@@ -12,19 +12,39 @@ import {
   SectionTitle,
 } from "../components/UI.jsx";
 import { ProductGrid } from "../components/ProductCard.jsx";
+import ProductReviews from "../components/ProductReviews.jsx";
 import NotFound from "./NotFound.jsx";
 export default function ProductDetails() {
+  const { products, categories, loading } = useCatalog();
   const { slug } = useParams();
   const p = products.find((p) => p.slug === slug);
   const [quantity, setQuantity] = useState(1);
   const [image, setImage] = useState(0);
   const { add } = useCart();
+  if (!p && loading)
+    return (
+      <div className="container section" role="status">
+        Loading product?
+      </div>
+    );
   if (!p) return <NotFound />;
   const buyingChecks = {
-    "Solar Panels": ["Panel wattage and dimensions", "Compatibility with your inverter and mounting location"],
-    "Inverters": ["Rated output and the appliances you need to power", "Battery voltage and solar panel compatibility"],
-    "Solar Security Cameras": ["Wi-Fi or SIM connectivity for your location", "Working lenses, recording storage and installation position"],
-    "Spy Cameras": ["Power supply and recording storage", "Connectivity and suitability for your intended location"],
+    "Solar Panels": [
+      "Panel wattage and dimensions",
+      "Compatibility with your inverter and mounting location",
+    ],
+    Inverters: [
+      "Rated output and the appliances you need to power",
+      "Battery voltage and solar panel compatibility",
+    ],
+    "Solar Security Cameras": [
+      "Wi-Fi or SIM connectivity for your location",
+      "Working lenses, recording storage and installation position",
+    ],
+    "Spy Cameras": [
+      "Power supply and recording storage",
+      "Connectivity and suitability for your intended location",
+    ],
   }[p.category] || ["Model specifications and compatibility"];
 
   return (
@@ -36,7 +56,7 @@ export default function ProductDetails() {
         <div>
           <div className="detail-image">
             <ProductImage
-              src={p.images[image]}
+              src={p.images[image] || p.images[0]}
               alt={`${p.name}, view ${image + 1}`}
             />
           </div>
@@ -125,7 +145,11 @@ export default function ProductDetails() {
           <p>{p.description}</p>
           <h2>Before you choose</h2>
           <p>Ask our team to confirm these details for the available model:</p>
-          <ul>{buyingChecks.map((check) => <li key={check}>{check}</li>)}</ul>
+          <ul>
+            {buyingChecks.map((check) => (
+              <li key={check}>{check}</li>
+            ))}
+          </ul>
           <h2>Warranty</h2>
           <p>{p.warranty}</p>
         </section>
@@ -141,6 +165,7 @@ export default function ProductDetails() {
           </dl>
         </section>
       </div>
+      <ProductReviews key={p.id} product={p} />
       <SectionTitle
         eyebrow="COMPLETE YOUR SETUP"
         title="Related products"

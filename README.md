@@ -153,3 +153,7 @@ The build prerenders all pages with unique metadata, canonical URLs, social prev
 ## JF branding and new product media
 
 See [PRODUCT-MEDIA.md](PRODUCT-MEDIA.md) for the branded assets and image prompts. New owner-supplied products are defined in `src/data/newProducts.js`; matching camera photos also appear in existing galleries. The Spy Cameras category includes round and clock designs. Solar panel and hybrid inverter pages include the supplied videos. All new listings use confirmed-on-enquiry pricing.
+
+## Admin dashboard and customer feedback
+
+Supabase + Netlify backend setup is documented in [ADMIN-SETUP.md](ADMIN-SETUP.md). The private dashboard is at `/admin`. Database migrations are in `supabase/migrations/`; run `npm run db:seed` after configuring the project to import the current real catalog. No customer accounts are required; submitted reviews remain pending until an administrator approves them.

@@ -11,6 +11,49 @@ from = "/api/contact"
 to = "/.netlify/functions/contact"
 status = 200
 
+[functions]
+node_bundler = "esbuild"
+external_node_modules = ["sharp"]
+
+[functions.storefront]
+included_files = ["dist/store-shell.html"]
+
+[[redirects]]
+from = "/api/store"
+to = "/.netlify/functions/store"
+status = 200
+force = true
+
+[[redirects]]
+from = "/"
+to = "/.netlify/functions/storefront?route=/"
+status = 200
+force = true
+
+[[redirects]]
+from = "/shop"
+to = "/.netlify/functions/storefront?route=/shop"
+status = 200
+force = true
+
+[[redirects]]
+from = "/about"
+to = "/.netlify/functions/storefront?route=/about"
+status = 200
+force = true
+
+[[redirects]]
+from = "/product/*"
+to = "/.netlify/functions/storefront?route=/product/:splat"
+status = 200
+force = true
+
+[[redirects]]
+from = "/sitemap.xml"
+to = "/.netlify/functions/storefront?route=/sitemap.xml"
+status = 200
+force = true
+
 [[redirects]]
 from = "/*"
 to = "/404.html"

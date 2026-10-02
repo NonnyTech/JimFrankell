@@ -4,6 +4,7 @@ export const publicRoutes = ["/", "/shop", "/about", "/contact", "/faq"];
 export const renderRoutes = [
   ...publicRoutes,
   "/cart",
+  "/admin",
   ...products.map((p) => `/product/${p.slug}`),
   "/404",
 ];
@@ -24,9 +25,14 @@ export function siteOrigin(value = b.websiteUrl) {
     );
   return url.origin;
 }
-export function pageSEO(pathname, search = "", origin = siteOrigin()) {
+export function pageSEO(
+  pathname,
+  search = "",
+  origin = siteOrigin(),
+  catalog = products,
+) {
   const path = pathname.replace(/\/+$/, "") || "/";
-  const product = products.find((p) => path === `/product/${p.slug}`);
+  const product = catalog.find((p) => path === `/product/${p.slug}`);
   const info = {
     "/": [
       "Solar CCTV Cameras & Power Solutions in Lagos",
@@ -47,6 +53,10 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
     "/faq": [
       "Solar Camera & Power Product FAQs",
       "Get answers about ordering solar security cameras, delivery enquiries, warranties, inverter selection and installation availability.",
+    ],
+    "/admin": [
+      "Store Administration",
+      "Private product and customer feedback management.",
     ],
     "/cart": [
       "Your Enquiry Cart",
@@ -73,6 +83,8 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
     origin && (info[path] || product)
       ? origin + (path === "/" ? "/" : path)
       : "";
+  const assetUrl = (value) =>
+    value.startsWith("https://") ? value : origin + value;
   const image = product?.images[0] || "/images/brand/jf-share-logo-compact.png";
   const graph = [];
   if (origin && indexable) {
@@ -149,7 +161,7 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
         "@type": "Product",
         name: product.name,
         description: product.description,
-        image: product.images.map((img) => origin + img),
+        image: product.images.map(assetUrl),
         url: canonical,
         sku: product.specifications["Enquiry reference"] || String(product.id),
         category: product.category,
@@ -158,12 +170,14 @@ export function pageSEO(pathname, search = "", origin = siteOrigin()) {
   return {
     title: `${title} | ${b.companyName}`,
     description,
-    shareTitle: product ? `${product.name} | ${b.companyName}` : `${b.companyName} | Solar & Security Solutions`,
+    shareTitle: product
+      ? `${product.name} | ${b.companyName}`
+      : `${b.companyName} | Solar & Security Solutions`,
     imageAlt: product ? product.name : `${b.companyName} green JF shield logo`,
     imageType: product ? "" : "image/png",
     imageSize: product ? null : 256,
     canonical,
-    image: origin ? origin + image : "",
+    image: origin ? assetUrl(image) : "",
     robots:
       indexable && !filtered
         ? "index, follow, max-image-preview:large"
@@ -203,8 +217,12 @@ export function seoHead(seo) {
       ? meta("og:image", seo.image, true) +
         meta("og:image:alt", seo.imageAlt || seo.title, true) +
         (seo.imageType ? meta("og:image:type", seo.imageType, true) : "") +
-        (seo.imageSize ? meta("og:image:width", seo.imageSize, true) + meta("og:image:height", seo.imageSize, true) : "") +
-        meta("twitter:image", seo.image) + meta("twitter:image:alt", seo.imageAlt || seo.title)
+        (seo.imageSize
+          ? meta("og:image:width", seo.imageSize, true) +
+            meta("og:image:height", seo.imageSize, true)
+          : "") +
+        meta("twitter:image", seo.image) +
+        meta("twitter:image:alt", seo.imageAlt || seo.title)
       : "") +
     (seo.verification
       ? meta("google-site-verification", seo.verification)

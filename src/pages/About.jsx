@@ -1,10 +1,11 @@
 import { Link } from "react-router-dom";
 import { ArrowUpRight, Check } from "lucide-react";
 import { businessConfig as b } from "../config/businessConfig.js";
-import { categories } from "../data/products.js";
+import { useCatalog } from "../context/CatalogContext.jsx";
 import { WhatsAppButton } from "../components/UI.jsx";
 // Neutral introductory copy. The owner should approve all company copy before launch.
 export default function About() {
+  const { products, categories, loading } = useCatalog();
   return (
     <>
       <section className="page-heading photo-page-heading banner-installation">
@@ -13,7 +14,9 @@ export default function About() {
           <h1>
             Better energy. <br />A better everyday.
           </h1>
-          <p>Meet {b.companyName} — solar security and reliable power solutions.</p>
+          <p>
+            Meet {b.companyName} — solar security and reliable power solutions.
+          </p>
         </div>
       </section>
       <section className="container section about-grid">
@@ -29,9 +32,8 @@ export default function About() {
           <h2>Your next step towards reliable power.</h2>
           <p>
             {b.companyName} offers solar security cameras and power solutions
-            for homes and businesses. We help
-            customers explore their options and choose products that suit their
-            everyday needs.
+            for homes and businesses. We help customers explore their options
+            and choose products that suit their everyday needs.
           </p>
           <h3>What we do</h3>
           <p>

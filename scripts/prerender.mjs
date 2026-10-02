@@ -13,6 +13,7 @@ import { products } from "../src/data/products.js";
 const template = readFileSync("dist/index.html", "utf8")
   .replace(/<title>[\s\S]*?<\/title>/, "")
   .replace(/<meta\s+name="description"[^>]*>/, "");
+writeFileSync("dist/store-shell.html", template);
 for (const path of renderRoutes) {
   const file = path === "/" ? "dist/index.html" : `dist${path}.html`;
   mkdirSync(dirname(file), { recursive: true });

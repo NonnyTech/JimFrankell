@@ -11,11 +11,14 @@
     "test:e2e": "playwright test",
     "format": "prettier --write src server api netlify/functions tests scripts vite.config.js playwright.config.js package.json README.md",
     "images:optimize": "node scripts/optimize-images.mjs",
-    "prebuild": "npm run images:optimize"
+    "prebuild": "npm run images:optimize",
+    "db:seed": "node scripts/seed-store.mjs",
+    "test:render": "node scripts/check-store-render.mjs"
   },
   "dependencies": {
     "@fontsource-variable/dm-sans": "^5.3.0",
     "@fontsource-variable/manrope": "^5.3.0",
+    "@supabase/supabase-js": "^2.117.2",
     "lucide-react": "^0.468.0",
     "react": "^19.0.0",
     "react-dom": "^19.0.0",

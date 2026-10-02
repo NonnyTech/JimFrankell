@@ -1,4 +1,5 @@
 import { defineConfig, loadEnv } from "vite";
+import { handleStore } from "./server/store.js";
 import { handleContact } from "./server/contact.js";
 export default defineConfig(({ mode }) => {
   const env = loadEnv(mode, process.cwd(), "");
@@ -8,6 +9,43 @@ export default defineConfig(({ mode }) => {
       {
         name: "local-contact-endpoint",
         configureServer(server) {
+          server.middlewares.use("/api/store", async (req, res) => {
+            const query = Object.fromEntries(
+              new URL(req.url, "http://localhost").searchParams,
+            );
+            const chunks = [];
+            let size = 0;
+            try {
+              for await (const chunk of req) {
+                size += chunk.length;
+                if (size <= 4300000) chunks.push(chunk);
+              }
+              const result =
+                size > 4300000
+                  ? { status: 413, body: { error: "Request too large" } }
+                  : await handleStore(
+                      {
+                        method: req.method,
+                        query,
+                        body: Buffer.concat(chunks).toString("utf8"),
+                        contentType: req.headers["content-type"],
+                        token: (req.headers.authorization || "").replace(
+                          /^Bearer /i,
+                          "",
+                        ),
+                        ip: req.socket.remoteAddress,
+                      },
+                      env,
+                    );
+              res.statusCode = result.status;
+              res.setHeader("Content-Type", "application/json");
+              res.setHeader("Cache-Control", "no-store");
+              res.end(JSON.stringify(result.body));
+            } catch {
+              res.statusCode = 503;
+              res.end(JSON.stringify({ error: "Service unavailable" }));
+            }
+          });
           server.middlewares.use("/api/contact", async (req, res) => {
             const chunks = [];
             let size = 0;

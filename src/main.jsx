@@ -4,6 +4,7 @@ import React from "react";
 import { createRoot } from "react-dom/client";
 import { BrowserRouter } from "react-router-dom";
 import { CartProvider } from "./context/CartContext.jsx";
+import { CatalogProvider } from "./context/CatalogContext.jsx";
 import App from "./App.jsx";
 import "./styles/global.css";
 class ErrorBoundary extends React.Component {
@@ -29,9 +30,14 @@ createRoot(document.getElementById("root")).render(
   <React.StrictMode>
     <ErrorBoundary>
       <BrowserRouter>
-        <CartProvider>
-          <App />
-        </CartProvider>
+        <CatalogProvider
+          initialProducts={window.__JF_CATALOG__?.products}
+          initialLive={window.__JF_CATALOG__?.live}
+        >
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </CatalogProvider>
       </BrowserRouter>
     </ErrorBoundary>
   </React.StrictMode>,

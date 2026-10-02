@@ -14,7 +14,7 @@ import {
   Store,
   Factory,
 } from "lucide-react";
-import { products } from "../data/products.js";
+import { useCatalog } from "../context/CatalogContext.jsx";
 import { businessConfig as b } from "../config/businessConfig.js";
 import { ProductGrid } from "../components/ProductCard.jsx";
 import {
@@ -23,6 +23,7 @@ import {
   WhatsAppButton,
 } from "../components/UI.jsx";
 export default function Home() {
+  const { products, categories, loading } = useCatalog();
   return (
     <>
       <HeroSlideshow />
@@ -89,14 +90,16 @@ export default function Home() {
           </div>
         </div>
       </section>
-      {products.some((p) => p.bestSeller) && <section className="container section best-section">
-        <SectionTitle
-          eyebrow="CUSTOMER FAVOURITES"
-          title="Best sellers"
-          to="/shop"
-        />
-        <ProductGrid products={products.filter((p) => p.bestSeller)} />
-      </section>}
+      {products.some((p) => p.bestSeller) && (
+        <section className="container section best-section">
+          <SectionTitle
+            eyebrow="CUSTOMER FAVOURITES"
+            title="Best sellers"
+            to="/shop"
+          />
+          <ProductGrid products={products.filter((p) => p.bestSeller)} />
+        </section>
+      )}
       <section className="why-section">
         <div className="container why-grid">
           <div>

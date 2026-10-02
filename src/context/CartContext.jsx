@@ -1,8 +1,9 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
-import { products } from "../data/products.js";
+import { products as seedProducts } from "../data/products.js";
+import { useCatalog } from "./CatalogContext.jsx";
 const CartContext = createContext(null);
 export const useCart = () => useContext(CartContext);
-export function restoreCart(value) {
+export function restoreCart(value, products = seedProducts) {
   if (!Array.isArray(value)) return [];
   return products
     .filter((p) => p.inStock)
@@ -20,9 +21,21 @@ export function restoreCart(value) {
     });
 }
 export function CartProvider({ children }) {
+  const { products } = useCatalog();
   const [cart, setCart] = useState(() => {
     try {
-      return restoreCart(JSON.parse(localStorage.getItem("jf-cart") || "[]"));
+      const saved = JSON.parse(localStorage.getItem("jf-cart") || "[]");
+      return Array.isArray(saved)
+        ? saved
+            .filter(
+              (i) =>
+                i &&
+                Number.isSafeInteger(i.id) &&
+                Number.isInteger(i.quantity) &&
+                i.quantity > 0,
+            )
+            .map((i) => ({ id: i.id, quantity: Math.min(i.quantity, 99) }))
+        : [];
     } catch {
       return [];
     }
@@ -44,7 +57,7 @@ export function CartProvider({ children }) {
   useEffect(() => () => clearTimeout(timer.current), []);
   const add = (product, quantity = 1) => {
     if (!product.inStock) return;
-    setCart((c) => restoreCart([...c, { id: product.id, quantity }]));
+    setCart((c) => restoreCart([...c, { id: product.id, quantity }], products));
     notify(`${product.name} added to quote basket`);
   };
   const update = (id, quantity) =>
@@ -63,7 +76,8 @@ export function CartProvider({ children }) {
     setCart([]);
     notify("Quote basket cleared");
   };
-  const items = cart.map((i) => ({
+  const activeCart = restoreCart(cart, products);
+  const items = activeCart.map((i) => ({
     ...i,
     product: products.find((p) => p.id === i.id),
   }));
@@ -76,7 +90,7 @@ export function CartProvider({ children }) {
         remove,
         clear,
         notify,
-        count: cart.reduce((s, i) => s + i.quantity, 0),
+        count: activeCart.reduce((s, i) => s + i.quantity, 0),
         total: items.reduce((s, i) => s + i.product.price * i.quantity, 0),
       }}
     >

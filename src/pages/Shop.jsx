@@ -1,9 +1,10 @@
 import { useSearchParams } from "react-router-dom";
 import { Search, SlidersHorizontal } from "lucide-react";
-import { products, categories } from "../data/products.js";
+import { products as seedProducts } from "../data/products.js";
+import { useCatalog } from "../context/CatalogContext.jsx";
 import { ProductGrid } from "../components/ProductCard.jsx";
 import { EmptyState } from "../components/UI.jsx";
-export function filterProducts(params) {
+export function filterProducts(params, products = seedProducts) {
   let list = products.filter(
     (p) =>
       (!params.get("category") || p.category === params.get("category")) &&
@@ -33,13 +34,14 @@ export function filterProducts(params) {
   );
 }
 export default function Shop() {
+  const { products, categories } = useCatalog();
   const [params, setParams] = useSearchParams();
   const change = (key, value) => {
     const next = new URLSearchParams(params);
     value ? next.set(key, value) : next.delete(key);
     setParams(next, { replace: true });
   };
-  const list = filterProducts(params);
+  const list = filterProducts(params, products);
   return (
     <>
       <div className="page-heading photo-page-heading banner-products">
@@ -47,8 +49,8 @@ export default function Shop() {
           <p className="eyebrow">THE RIGHT PRODUCTS. A BRIGHTER EVERYDAY.</p>
           <h1>Find your next power solution.</h1>
           <p>
-            Explore solar security cameras, panels, inverters and batteries in one
-            place.
+            Explore solar security cameras, panels, inverters and batteries in
+            one place.
           </p>
         </div>
       </div>

@@ -2,7 +2,7 @@
 // owner's verified inventory, photography, stock and warranty terms before production.
 import { securityProducts } from "./securityProducts.js";
 import { newProducts } from "./newProducts.js";
-const categoryDefinitions = [
+export const categoryDefinitions = [
   {
     name: "Solar Security Cameras",
     description: "Solar-powered security options",

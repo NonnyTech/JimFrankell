@@ -1,3 +1,4 @@
+import { lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Metadata from "./components/Metadata.jsx";
 import Layout from "./components/Layout.jsx";
@@ -10,12 +11,23 @@ import Contact from "./pages/Contact.jsx";
 import FAQ from "./pages/FAQ.jsx";
 import NotFound from "./pages/NotFound.jsx";
 
+const Admin = lazy(() => import("./pages/Admin.jsx"));
 export default function App() {
   const location = useLocation();
   return (
     <>
       <Metadata />
       <Routes>
+        <Route
+          path="admin"
+          element={
+            <Suspense
+              fallback={<div className="container section">Loading admin?</div>}
+            >
+              <Admin />
+            </Suspense>
+          }
+        />
         <Route element={<Layout />}>
           <Route index element={<Home />} />
           <Route path="shop" element={<Shop />} />

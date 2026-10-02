@@ -62,6 +62,7 @@ export default function Layout() {
               ["/about", "About Us"],
               ["/contact", "Contact"],
               ["/faq", "FAQ"],
+              ["/admin", "Admin login"],
             ].map(([to, label]) => (
               <NavLink key={to} end={to === "/"} to={to}>
                 {label}

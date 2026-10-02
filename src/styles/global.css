@@ -2547,3 +2547,18 @@ textarea {
 .quote-fields label { font-size: .85rem; font-weight: 600; margin-top: 8px; }
 .quote-fields input, .quote-fields select, .quote-fields textarea { width: 100%; min-width: 0; padding: 12px; border: 1px solid #cbd8ce; border-radius: 8px; background: white; color: #102c27; font: inherit; }
 .quote-fields textarea { resize: vertical; }
+
+.store-form { display: flex; flex-direction: column; gap: 16px; }
+.store-form label { display: flex; flex-direction: column; gap: 8px; font-weight: 600; }
+.store-form input, .store-form textarea, .store-form select { width: 100%; min-width: 0; font: inherit; padding: 12px; border: 1px solid #cbd8ce; border-radius: 8px; color: #102c27; background: white; }
+.store-form textarea { resize: vertical; }
+.store-form .check-label { flex-direction: row; align-items: flex-start; font-weight: 400; font-size: .9rem; }
+.store-form .check-label input { width: auto; margin-top: 5px; }
+.reviews-section { display: grid; grid-template-columns: 1fr 1fr; gap: 40px; margin: 60px 0; border-top: 1px solid #dce5df; padding-top: 40px; }
+.review-form { background: #f3f6f3; padding: 24px; border-radius: 16px; }
+.review { padding: 20px 0; border-bottom: 1px solid #dce5df; overflow-wrap: anywhere; }
+.review p { white-space: pre-wrap; }
+.review span { color: #157b50; }
+.review-trap { display: none; }
+.catalog-alert { padding: 16px; text-align: center; background: #fff1e8; }
+@media(max-width:700px) { .reviews-section { grid-template-columns: 1fr; } }
