@@ -44,12 +44,12 @@ async function mockStore(page, { denied = false } = {}) {
       };
     else if (resource === "products")
       result = { products: [product], live: true };
-    else if (resource === "reviews") result = { reviews: [], enabled: true };
+    else if (["reviews", "home-reviews"].includes(resource)) result = { reviews: [], enabled: true };
     else if (resource === "feedback") {
       feedback.push(request.postDataJSON());
       result = {
         message:
-          "Thank you. Your feedback has been saved and is awaiting admin approval.",
+          "Thank you for sharing your feedback.",
       };
     } else if (denied) {
       status = 403;
@@ -192,7 +192,7 @@ test("dynamic product survives basket reload and feedback awaits approval on mob
   await page.getByRole("button", { name: "Submit feedback" }).click();
   await expect(
     page.getByText(
-      "Thank you. Your feedback has been saved and is awaiting admin approval.",
+      "Thank you for sharing your feedback.",
     ),
   ).toBeVisible();
   await expect(page.locator(".review")).toHaveCount(0);

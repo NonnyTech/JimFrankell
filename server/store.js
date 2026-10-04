@@ -30,7 +30,7 @@ export async function handleStore(req, env = process.env, fetcher = fetch) {
     if (!configured(env)) {
       if (method === "GET" && resource === "products")
         return success({ products: seedProducts, live: false });
-      if (method === "GET" && resource === "reviews")
+      if (method === "GET" && ["reviews", "home-reviews"].includes(resource))
         return success({ reviews: [], enabled: false });
       throw new StoreError(
         503,
@@ -38,6 +38,17 @@ export async function handleStore(req, env = process.env, fetcher = fetch) {
       );
     }
     const db = database(env, fetcher);
+    if (method === "GET" && resource === "home-reviews") {
+      const reviews = [];
+      for (let offset = 0; ; offset += 500) {
+        const rows = await db.rest(
+          `store_reviews?status=eq.approved&select=id,name,rating,message,created_at,store_products!inner(slug,product_name:data->>name)&store_products.published=eq.true&order=created_at.desc,id.desc&limit=500&offset=${offset}`,
+        );
+        reviews.push(...rows.map(({ store_products, ...review }) => ({ ...review, productName: store_products.product_name, productSlug: store_products.slug })));
+        if (rows.length < 500) break;
+      }
+      return success({ reviews, enabled: true });
+    }
     if (method === "GET" && resource === "products")
       return success({
         products: await publishedProducts(env, fetcher),
@@ -75,7 +86,7 @@ export async function handleStore(req, env = process.env, fetcher = fetch) {
     if (resource === "feedback" && method === "POST") {
       if (body.website)
         return success(
-          { message: "Thank you. Your feedback will be reviewed." },
+          { message: "Thank you for sharing your feedback." },
           202,
         );
       let review;
@@ -108,7 +119,7 @@ export async function handleStore(req, env = process.env, fetcher = fetch) {
       return success(
         {
           message:
-            "Thank you. Your feedback has been saved and is awaiting admin approval.",
+            "Thank you for sharing your feedback.",
         },
         201,
       );

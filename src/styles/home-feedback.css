@@ -1,0 +1,17 @@
+.home-feedback { background: #f0f5f0; }
+.home-feedback-grid { display: grid; grid-template-columns: 1.1fr 1fr; gap: 32px; margin-top: 32px; align-items: start; }
+.feedback-carousel { background: #133d35; color: #fff; border-radius: 22px; padding: clamp(24px, 4vw, 48px); min-width: 0; }
+.feedback-carousel p, .feedback-carousel small { color: #d7e8dc; }
+.feedback-slide blockquote { font-size: clamp(16px, 1.2vw, 18px); line-height: 1.65; margin: 20px 0; white-space: pre-wrap; overflow-wrap: anywhere; }
+.feedback-stars { color: #d8ecab; font-size: 24px; letter-spacing: 3px; }
+.feedback-person { display: flex; gap: 14px; align-items: center; margin-bottom: 16px; }
+.feedback-person > div { min-width: 0; overflow-wrap: anywhere; }
+.feedback-person a { display: block; margin-top: 6px; color: #d8ecab; font-size: 14px; }
+.feedback-avatar { display: grid; place-items: center; flex: 0 0 48px; height: 48px; border-radius: 50%; background: #d8ecab; color: #133d35; font-weight: 700; }
+.feedback-controls { display: flex; align-items: center; flex-wrap: wrap; gap: 12px; border-top: 1px solid #49675b; padding-top: 24px; margin-top: 28px; }
+.feedback-controls button { min-width: 44px; min-height: 44px; border-radius: 8px; border: 1px solid #849c90; background: transparent; color: white; padding: 8px 12px; font: inherit; cursor: pointer; }
+.feedback-controls button:last-child { margin-left: auto; }
+.home-feedback .review-form { background: #fff; border: 1px solid #dce5df; }
+.home-feedback .store-form input, .home-feedback .store-form select, .home-feedback .store-form textarea { font-size: 16px; }
+.feedback-empty { padding: 24px 0; }
+@media(max-width: 760px) { .home-feedback-grid { grid-template-columns: 1fr; } }

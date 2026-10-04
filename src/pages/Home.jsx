@@ -1,3 +1,4 @@
+import HomeFeedback from "../components/HomeFeedback.jsx";
 import CategoryBrowser from "../components/CategoryBrowser.jsx";
 import HeroSlideshow from "../components/HeroSlideshow.jsx";
 import { Link } from "react-router-dom";
@@ -165,6 +166,7 @@ export default function Home() {
           ))}
         </div>
       </section>
+      <HomeFeedback />
     </>
   );
 }
