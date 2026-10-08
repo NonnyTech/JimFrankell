@@ -61,6 +61,19 @@ The home, shop, about, product pages and sitemap are rendered from the current d
 
 ## Product and feedback behaviour
 
+### Order tracking setup
+
+1. Open your Supabase project, choose **SQL Editor → New query**, paste the entire contents of `supabase/migrations/002_orders.sql`, and click **Run** once. Keep the existing `001_store.sql` setup; do not run it again.
+2. Deploy this version to Netlify (or restart `npm.cmd run dev` locally). No new environment variables are needed.
+3. Add a product to the basket, enter a name and phone number, choose delivery or collection, and provide a delivery address if required. Select **Save order and continue**. The next screen displays the saved reference and **Send order on WhatsApp** link.
+4. Sign in to **Admin → Orders**. Review the saved customer details, product photos, chosen inverter capacity, quantities and prices. Update the status to **confirmed**, **dispatched**, **completed**, or **cancelled** as appropriate. Filter by status and use pagination for older orders.
+
+Orders start as **new**. A saved order is not proof of payment, customer WhatsApp delivery, or business acceptance. Product totals exclude delivery and installation. Items without a price retain a pending price confirmation rather than being counted as free.
+
+The server checks published products, availability, capacity and current prices, stores an immutable item/price snapshot, and rejects stale displayed prices. Retrying the same submission reuses its reference. Only authorised admins can list customer details or update statuses; customers have no public order lookup. Order requests are rate limited. Customer details are stored with consent; establish a suitable business retention policy and delete data when it is no longer needed.
+
+Run migration 002 **before** deploying: otherwise order saves and the Orders tab will report a database error. Local automated tests mock the database and do not apply this SQL or test your live Supabase credentials.
+
 - Inverters support capacity pricing: edit an inverter and use **Inverter capacities and prices** to add, change or remove kVA/NGN rows, then **Save product**. Other categories retain a single price. Empty option lists use the normal single-price field.
 - The existing `jf-hybrid-solar-inverter` listing initially uses the owner's six prices: 12kVA/450000, 8kVA/350000, 5.6kVA/300000, 3.5kVA/280000, 2kVA/220000 and 1.5kVA/180000. These defaults apply only when the database record has no `inverterOptions` field. Saving from admin stores the options in the existing product JSON; subsequent edits, including removing all options, take precedence. No SQL migration is required.
 - Customers select a capacity before adding an inverter to their quote. Different capacities stay separate in the basket and WhatsApp message. Basket prices are resolved from the current catalog after reload; removed capacities are excluded.

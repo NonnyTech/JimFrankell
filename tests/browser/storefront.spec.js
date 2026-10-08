@@ -1,3 +1,4 @@
+import { mockOrderEndpoint, saveTestOrder } from "./order-helper.js";
 import { test, expect } from "@playwright/test";
 test("desktop navigation, catalog, filtering, gallery and persistent cart", async ({page}) => {
   await page.goto('/');
@@ -21,12 +22,14 @@ test("desktop navigation, catalog, filtering, gallery and persistent cart", asyn
   await page.getByRole('link',{name:'Basket, 2 items'}).click();
   await page.reload();
   await expect(page.locator('.quantity')).toContainText('2');
-  await expect(page.locator('.order-summary')).toContainText('Quotation required');
+  await expect(page.locator('.order-summary')).toContainText('Price confirmation required');
+  await mockOrderEndpoint(page);
+  await saveTestOrder(page);
   const url=new URL(await page.getByRole('link',{name:'Send order on WhatsApp'}).getAttribute('href'));
   expect(url.pathname).toBe('/2348061552184');
   expect(url.searchParams.get('text')).toContain('Quantity: 2');
   await page.getByRole('button',{name:/Remove JF Solar Camera/}).click();
-  await expect(page.getByRole('heading',{name:'Your quote basket is empty.'})).toBeVisible();
+  await expect(page.getByRole('heading',{name:'Your basket is empty.'})).toBeVisible();
   await page.goto('/product/5kva-hybrid-inverter');
   await expect(page.getByRole('heading',{level:1})).toContainText('connected');
 });
@@ -64,10 +67,11 @@ test("mobile menu and page layouts stay inside the viewport", async ({
     fullPage: true,
   });
   await page.goto("/product/jf-hybrid-solar-inverter");
+  await page.getByLabel("Choose inverter capacity (kVA)").selectOption("12");
   await page.getByRole("button", { name: "Add to basket", exact: true }).click();
   await page.goto("/cart");
   await expect(
-    page.getByRole("link", { name: "Send order on WhatsApp" }),
+    page.getByRole("button", { name: "Save order and continue" }),
   ).toBeVisible();
   expect(
     await page.evaluate(
@@ -145,23 +149,23 @@ test("header search, repeated additions, clear cart and damaged storage recovery
     .getByRole("button", { name: "Search", exact: true })
     .click();
   await expect(page.locator(".product-card")).toHaveCount(1);
-  await page
-    .getByRole("button", { name: "Add JF Hybrid Solar Inverter to basket" })
-    .click();
+  await page.getByRole("link", { name: "Choose kVA", exact: true }).click();
+  await page.getByLabel("Choose inverter capacity (kVA)").selectOption("12");
+  await page.getByRole("button", { name: "Add to basket", exact: true }).click();
   await expect(page.getByRole("link", { name: "Basket, 1 items" })).toBeVisible();
   await page
-    .getByRole("button", { name: "Add JF Hybrid Solar Inverter to basket" })
+    .getByRole("button", { name: "Add to basket", exact: true })
     .click();
   await page.getByRole("link", { name: "Basket, 2 items" }).click();
   await expect(page.locator(".cart-item")).toHaveCount(1);
   await page.getByRole("button", { name: "Clear basket", exact: true }).click();
   await expect(
-    page.getByRole("heading", { name: "Your quote basket is empty." }),
+    page.getByRole("heading", { name: "Your basket is empty." }),
   ).toBeVisible();
   await page.evaluate(() => localStorage.setItem("jf-cart", "not-valid-json"));
   await page.reload();
   await expect(
-    page.getByRole("heading", { name: "Your quote basket is empty." }),
+    page.getByRole("heading", { name: "Your basket is empty." }),
   ).toBeVisible();
   expect((await request.get("/api/contact")).status()).toBe(405);
   expect((await request.post("/api/contact", { data: {} })).status()).toBe(400);

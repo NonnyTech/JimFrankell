@@ -1,3 +1,4 @@
+import AdminOrders from "../components/AdminOrders.jsx";
 import { useEffect, useRef, useState } from "react";
 import { defaultInverterOptions, inverterOptions } from "../utils/inverter-options.js";
 import { Link } from "react-router-dom";
@@ -129,7 +130,7 @@ export default function Admin() {
     }
   }
   useEffect(() => {
-    if (session && client) load();
+    if (session && client && tab !== "orders") load();
   }, [session?.user.id, client, tab, offset, reviewStatus]);
   async function login(event) {
     event.preventDefault();
@@ -418,6 +419,7 @@ export default function Admin() {
                 )}
               </div>
               <nav className="admin-tabs" aria-label="Admin sections">
+                {authorized && <button aria-pressed={tab === "orders"} disabled={busy || !!editor} onClick={() => { setTab("orders"); setOffset(0); }}>Orders</button>}
                 <button
                   aria-pressed={tab === "products"}
                   disabled={busy || !!editor}
@@ -438,7 +440,7 @@ export default function Admin() {
                 >
                   Customer feedback
                 </button>
-                <button disabled={busy || !!editor} onClick={load}>
+                <button disabled={busy || !!editor || tab === "orders"} onClick={load}>
                   Refresh
                 </button>
               </nav>
@@ -655,7 +657,7 @@ export default function Admin() {
                 </form>
               ) : (
                 authorized &&
-                (tab === "products" ? (
+                (tab === "orders" ? <AdminOrders api={api} /> : tab === "products" ? (
                   <section className="admin-panel">
                     <h2>Products</h2>
                     <p>
@@ -745,7 +747,7 @@ export default function Admin() {
                   </section>
                 ))
               )}
-              {authorized && !editor && (
+              {authorized && !editor && tab !== "orders" && (
                 <div className="admin-actions">
                   <button
                     disabled={busy || offset === 0}

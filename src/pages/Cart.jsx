@@ -1,20 +1,15 @@
-import { useState } from "react";
+import OrderCheckout from "../components/OrderCheckout.jsx";
 import { Link } from "react-router-dom";
-import { Trash2, ArrowLeft, ShieldCheck } from "lucide-react";
+import { Trash2, ArrowLeft } from "lucide-react";
 import { useCart } from "../context/CartContext.jsx";
 import { formatCurrency as money } from "../utils/currency.js";
-import { cartMessage } from "../utils/whatsapp.js";
 import {
   EmptyState,
   ProductImage,
   QuantitySelector,
-  WhatsAppButton,
 } from "../components/UI.jsx";
 export default function Cart() {
   const { items, total, count, update, remove, clear } = useCart();
-  const [details, setDetails] = useState({ location: "", installation: "Not sure yet", notes: "" });
-  const setDetail = (key, value) => setDetails((current) => ({ ...current, [key]: value }));
-  const needsQuote = items.some((i) => i.product.price == null);
   return (
     <section className="container section">
       <p className="eyebrow">ONE STEP CLOSER TO BETTER POWER</p>
@@ -68,48 +63,7 @@ export default function Cart() {
               <ArrowLeft size={17} /> Continue shopping
             </Link>
           </div>
-          <aside className="order-summary">
-            <h2>Complete your order</h2>
-            <div>
-              <span>Product total</span>
-              <strong>
-                {needsQuote ? "Quotation required" : money(total)}
-              </strong>
-            </div>
-            {needsQuote && (
-              <p>
-                Some items need a price confirmation. Our team will quote your
-                complete order on WhatsApp.
-              </p>
-            )}
-            <p>
-              Delivery cost and availability will be confirmed by our team on
-              WhatsApp.
-            </p>
-            <div className="quote-fields">
-              <label htmlFor="quote-location">Delivery area (optional)</label>
-              <input id="quote-location" autoComplete="address-level2" maxLength={120} placeholder="e.g. Ikeja, Lagos" value={details.location} onChange={(e) => setDetail("location", e.target.value)} />
-              <label htmlFor="quote-installation">Do you need installation?</label>
-              <select id="quote-installation" value={details.installation} onChange={(e) => setDetail("installation", e.target.value)}>
-                <option>Not sure yet</option><option>Yes, please include installation</option><option>No, products only</option>
-              </select>
-              <label htmlFor="quote-notes">Anything else? (optional)</label>
-              <textarea id="quote-notes" rows={3} maxLength={600} placeholder="Tell us about your property or what you need." value={details.notes} onChange={(e) => setDetail("notes", e.target.value)} />
-            </div>
-            <WhatsAppButton
-              message={cartMessage(items, details)}
-              className="button green full"
-            >
-              Send order on WhatsApp
-            </WhatsAppButton>
-            <span className="summary-note">
-              <ShieldCheck size={19} /> No payment is taken on this website.
-            </span>
-            <p>
-              Your products and order details will be included. Send the message on WhatsApp to
-              complete your order with our team.
-            </p>
-          </aside>
+          <OrderCheckout items={items} total={total} />
         </div>
       )}
     </section>

@@ -1,4 +1,5 @@
 import { randomUUID } from "node:crypto";
+import { createOrder, adminOrders } from "./orders.js";
 import { products as seedProducts } from "../src/data/products.js";
 import { validateProduct, validateFeedback } from "./catalog-validation.js";
 import {
@@ -124,8 +125,11 @@ export async function handleStore(req, env = process.env, fetcher = fetch) {
         201,
       );
     }
+    if (resource === "orders" && method === "POST")
+      return success({ order: await createOrder(db, body, req.ip) }, 201);
     // Every admin read and write authenticates with Supabase and checks a private allowlist.
     const user = await db.admin(req.token);
+    if (resource === "admin-orders") return success(await adminOrders(db, req, body, user));
     if (resource === "admin-products" && method === "GET") {
       const offset = Math.max(0, Number(req.query.offset) || 0);
       return success({

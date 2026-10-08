@@ -37,9 +37,7 @@ test("mobile customer chooses kVA, retains both capacities after reload and send
   await page.reload();
   await expect(page.locator('.cart-item')).toHaveCount(2);
   await expect(page.locator('.order-summary')).toContainText('800,000');
-  const href = await page.getByRole('link', { name: 'Send order on WhatsApp' }).getAttribute('href');
-  const message = new URL(href).searchParams.get('text');
-  expect(message).toContain('12 kVA'); expect(message).toContain('8 kVA'); expect(message).toContain('800,000');
+  await expect(page.getByRole('button', { name: 'Save order and continue' })).toBeVisible();
   await page.getByRole('button', { name: 'Remove ' + inverter.name + ' (12 kVA)', exact: true }).click();
   await expect(page.locator('.cart-item')).toHaveCount(1);
   await expect(page.locator('.order-summary')).toContainText('350,000');

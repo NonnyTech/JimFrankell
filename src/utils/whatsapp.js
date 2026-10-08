@@ -26,6 +26,8 @@ export function cartMessage(items, details = {}) {
   ].filter(Boolean);
   return [
     `Hello ${b.shortName}, I would like to place an order.`,
+    ...(details.reference ? [`*ORDER REFERENCE: ${details.reference}*`] : []),
+    ...(details.customerName ? [`Customer: ${details.customerName}\nPhone: ${details.phone}`] : []),
     "*ORDER DETAILS*",
     ...productLines,
     `*ORDER TOTAL: ${total}*\nDelivery and installation charges are not included.`,
