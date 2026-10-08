@@ -1,5 +1,6 @@
 import { businessConfig as b } from "../config/businessConfig.js";
 import { formatCurrency as money } from "./currency.js";
+import { inverterOptions } from "./inverter-options.js";
 export const enquiryMessage = `Hello ${b.shortName}, I would like to make an enquiry about your products.`;
 export function whatsappUrl(message = enquiryMessage) {
   const number = b.whatsappNumber.replace(/\D/g, "");
@@ -8,7 +9,29 @@ export function whatsappUrl(message = enquiryMessage) {
     : null;
 }
 export const productMessage = (product) =>
-  `Hello ${b.shortName},\n\nI'm interested in:\n\nProduct: ${product.name}\nPrice: ${money(product.price)}\n\nPlease send me more information about availability, warranty and delivery.\n\nThank you.`;
+  `Hello ${b.shortName},\n\nI'm interested in:\n\nProduct: ${product.name}\nPrice: ${inverterOptions(product).length && product.kva == null ? `From ${money(Math.min(...inverterOptions(product).map(o => o.price)))} (capacity to be selected)` : money(product.price)}\n\nPlease send me more information about availability, warranty and delivery.\n\nThank you.`;
 export function cartMessage(items, details = {}) {
-  return `Hello ${b.shortName},\n\nPlease send me a quote for the following products:\n\n${items.map(({ product: p, quantity }, i) => `${i + 1}. ${p.name}\nQuantity: ${quantity}\nUnit Price: ${money(p.price)}\nSubtotal: ${money(p.price == null ? null : p.price * quantity)}`).join("\n\n")}\n\nORDER TOTAL: ${items.some((i) => i.product.price == null) ? "Quotation required (includes items with price on request)" : money(items.reduce((sum, i) => sum + i.product.price * i.quantity, 0))}${details.location?.trim() ? `\n\nDelivery area: ${details.location.trim()}` : ""}${details.installation ? `\nInstallation: ${details.installation}` : ""}${details.notes?.trim() ? `\nAdditional notes: ${details.notes.trim()}` : ""}\n\nPlease confirm availability, warranty, delivery cost and next steps.\n\nThank you.`;
+  const productLines = items.map(({ product: p, quantity }, index) => [
+    `*${index + 1}. ${p.name}*`,
+    `Quantity: ${quantity} × ${money(p.price)} each`,
+    `Subtotal: ${money(p.price == null ? null : p.price * quantity)}`,
+    ...(p.slug ? [`View product & photo: ${b.websiteUrl.replace(/\/$/, "")}/product/${encodeURIComponent(p.slug)}`] : []),
+  ].join("\n"));
+  const total = items.some(({ product }) => product.price == null)
+    ? "Quotation required (includes items with price on request)"
+    : money(items.reduce((sum, { product, quantity }) => sum + product.price * quantity, 0));
+  const delivery = [
+    details.location?.trim() && `Delivery area: ${details.location.trim()}`,
+    details.installation && `Installation: ${details.installation}`,
+  ].filter(Boolean);
+  return [
+    `Hello ${b.shortName}, I would like to place an order.`,
+    "*ORDER DETAILS*",
+    ...productLines,
+    `*ORDER TOTAL: ${total}*\nDelivery and installation charges are not included.`,
+    ...(delivery.length ? [`*DELIVERY & INSTALLATION*\n${delivery.join("\n")}`] : []),
+    ...(details.notes?.trim() ? [`*ADDITIONAL NOTES*\n${details.notes.trim()}`] : []),
+    "Please confirm availability, warranty, delivery cost and next steps.",
+    "Thank you.",
+  ].join("\n\n");
 }

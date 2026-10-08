@@ -1,4 +1,5 @@
-// Owner-supplied September 2026 media. No unconfirmed prices or ratings.
+import { defaultInverterOptions } from "../utils/inverter-options.js";
+// Owner-supplied media and inverter prices. No unconfirmed ratings.
 const arrivals = [
   {
     id: 201,
@@ -50,7 +51,8 @@ export const newProducts = arrivals.map(
   ({ image, specifications, video, ...p }, index) => ({
     ...p,
     brand: "Jim-Frankell Ltd",
-    price: null,
+    price: p.category === "Inverters" ? 180000 : null,
+    ...(p.category === "Inverters" ? { inverterOptions: defaultInverterOptions } : {}),
     oldPrice: null,
     images: [`/images/products/jf/${image}-cutout.webp`],
     videos: video

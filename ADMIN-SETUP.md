@@ -61,6 +61,10 @@ The home, shop, about, product pages and sitemap are rendered from the current d
 
 ## Product and feedback behaviour
 
+- Inverters support capacity pricing: edit an inverter and use **Inverter capacities and prices** to add, change or remove kVA/NGN rows, then **Save product**. Other categories retain a single price. Empty option lists use the normal single-price field.
+- The existing `jf-hybrid-solar-inverter` listing initially uses the owner's six prices: 12kVA/450000, 8kVA/350000, 5.6kVA/300000, 3.5kVA/280000, 2kVA/220000 and 1.5kVA/180000. These defaults apply only when the database record has no `inverterOptions` field. Saving from admin stores the options in the existing product JSON; subsequent edits, including removing all options, take precedence. No SQL migration is required.
+- Customers select a capacity before adding an inverter to their quote. Different capacities stay separate in the basket and WhatsApp message. Basket prices are resolved from the current catalog after reload; removed capacities are excluded.
+
 - Prices are in NGN. Blank means quotation required. Existing product URL slugs cannot be changed, preserving shared links.
 - Photos: JPEG, PNG or WebP, up to 3 MB and 24 megapixels, maximum eight per product. The server validates and re-encodes them as WebP, strips metadata, and preserves aspect ratio. It does not remove photo backgrounds.
 - Products are hidden by unpublishing rather than deleting customer feedback. Unused photo files remain in Storage; periodically remove truly unused files through the Supabase dashboard.

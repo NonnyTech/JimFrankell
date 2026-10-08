@@ -87,7 +87,7 @@ export default function Layout() {
             <Link
               className="cart-link"
               to="/cart"
-              aria-label={`Quote basket, ${count} items`}
+              aria-label={`Basket, ${count} items`}
             >
               <ShoppingBag size={21} />
               <span className="cart-count">{count}</span>

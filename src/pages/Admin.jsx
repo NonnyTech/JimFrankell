@@ -1,4 +1,5 @@
 import { useEffect, useRef, useState } from "react";
+import { defaultInverterOptions, inverterOptions } from "../utils/inverter-options.js";
 import { Link } from "react-router-dom";
 import { createClient } from "@supabase/supabase-js";
 import { storeRequest } from "../services/storeService.js";
@@ -16,6 +17,7 @@ const freshProduct = () => ({
   category: productCategories[0],
   brand: "Jim-Frankell Ltd",
   price: "",
+  inverterOptions: [],
   shortDescription: "",
   description: "",
   warranty: "Please confirm warranty terms before ordering.",
@@ -192,7 +194,7 @@ export default function Admin() {
     }
   }
   function edit(product) {
-    setEditor({ ...product, price: product.price ?? "" });
+    setEditor({ ...product, price: product.price ?? "", inverterOptions: inverterOptions(product).map(o => ({ ...o })) });
     setSpecText(
       Object.entries(product.specifications || {})
         .map(([key, value]) => `${key}: ${value}`)
@@ -224,6 +226,7 @@ export default function Admin() {
       const product = validateProduct({
         ...editor,
         specifications,
+        inverterOptions: editor.category === "Inverters" ? (editor.inverterOptions || []).map(o => ({ kva: Number(o.kva), price: Number(o.price) })) : [],
         price: editor.price === "" ? null : Number(editor.price),
       });
       await api("admin-products", {
@@ -478,6 +481,7 @@ export default function Admin() {
                     <label>
                       Category
                       <select
+                        aria-label="Category"
                         value={editor.category}
                         onChange={(e) => field("category", e.target.value)}
                       >
@@ -495,7 +499,7 @@ export default function Admin() {
                         onChange={(e) => field("brand", e.target.value)}
                       />
                     </label>
-                    <label>
+                    {!(editor.category === "Inverters" && editor.inverterOptions?.length) && <label>
                       Price (NGN)
                       <input
                         type="number"
@@ -506,8 +510,19 @@ export default function Admin() {
                         onChange={(e) => field("price", e.target.value)}
                       />
                       <small>Leave blank for “Price on request”.</small>
-                    </label>
+                    </label>}
                   </div>
+                  {editor.category === "Inverters" && <fieldset className="inverter-editor">
+                    <legend>Inverter capacities and prices</legend>
+                    <p>Add a price for each kVA option. Customers choose their capacity before adding to a quote.</p>
+                    {(editor.inverterOptions || []).map((option, index) => <div className="inverter-option-row" key={index}>
+                      <label>Capacity (kVA)<input aria-label={`Capacity ${index + 1} (kVA)`} type="number" min="0.01" max="10000" step="0.01" required value={option.kva} onChange={e => field("inverterOptions", editor.inverterOptions.map((o, i) => i === index ? { ...o, kva: e.target.value } : o))} /></label>
+                      <label>Price (NGN)<input aria-label={`Capacity ${index + 1} price (NGN)`} type="number" min="0.01" max="1000000000" step="0.01" required value={option.price} onChange={e => field("inverterOptions", editor.inverterOptions.map((o, i) => i === index ? { ...o, price: e.target.value } : o))} /></label>
+                      <button type="button" disabled={busy} onClick={() => field("inverterOptions", editor.inverterOptions.filter((_, i) => i !== index))}>Remove capacity {index + 1}</button>
+                    </div>)}
+                    <div className="admin-actions"><button type="button" disabled={busy || editor.inverterOptions?.length >= 30} onClick={() => field("inverterOptions", [...(editor.inverterOptions || []), { kva: "", price: "" }])}>Add capacity</button>
+                    {!editor.inverterOptions?.length && <button type="button" disabled={busy} onClick={() => field("inverterOptions", defaultInverterOptions.map(o => ({ ...o })))}>Use supplied kVA prices</button>}</div>
+                  </fieldset>}
                   <label>
                     Short description
                     <textarea
@@ -655,7 +670,7 @@ export default function Admin() {
                             <strong>{p.name}</strong>
                             <p>
                               {p.published ? "Published" : "Draft"} ·{" "}
-                              {p.price == null
+                              {inverterOptions(p).length > 0 && "From "}{p.price == null
                                 ? "Price on request"
                                 : `NGN ${p.price.toLocaleString()}`}
                             </p>

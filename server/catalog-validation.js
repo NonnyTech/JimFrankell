@@ -49,6 +49,25 @@ export function validateProduct(input) {
     input.images.length > 8
   )
     throw new Error("Add between one and eight product photos.");
+  const options = input.inverterOptions ?? [];
+  if (!Array.isArray(options) || options.length > 30)
+    throw new Error("Add up to 30 inverter capacities.");
+  if (options.length && input.category !== "Inverters")
+    throw new Error("Capacity pricing is only available for inverters.");
+  const seen = new Set();
+  const inverterOptions = options.map(option => {
+    if (!option || typeof option.kva !== "number" || !Number.isFinite(option.kva) ||
+        option.kva <= 0 || option.kva > 10000 ||
+        Math.abs(option.kva * 100 - Math.round(option.kva * 100)) > 0.0001)
+      throw new Error("Enter a positive kVA capacity with at most two decimal places.");
+    if (seen.has(option.kva)) throw new Error("Each inverter capacity must be unique.");
+    seen.add(option.kva);
+    if (typeof option.price !== "number" || !Number.isFinite(option.price) ||
+        option.price <= 0 || option.price > 1000000000 ||
+        Math.abs(option.price * 100 - Math.round(option.price * 100)) > 0.0001)
+      throw new Error("Each capacity needs a positive price with at most two decimal places.");
+    return { kva: option.kva, price: option.price };
+  });
   const images = input.images.map((value) => {
     const image = text(value, "Image URL", 1, 2048);
     if (!/^\/images\/[a-zA-Z0-9_./-]+$/.test(image)) {
@@ -84,7 +103,8 @@ export function validateProduct(input) {
     name,
     slug,
     category: input.category,
-    price: input.price,
+    price: inverterOptions.length ? Math.min(...inverterOptions.map(o => o.price)) : input.price,
+    inverterOptions,
     images,
     specifications,
     brand: text(input.brand, "Brand", 1, 100),

@@ -192,3 +192,8 @@
   .admin-fields > label { min-width: 0; }
   .admin-shell .admin-actions .button { width: 100%; }
 }
+
+.inverter-editor { min-width: 0; padding: 20px; border: 1px solid #ccdcd1; border-radius: 12px; }
+.inverter-option-row { display: grid; grid-template-columns: 1fr 1fr auto; align-items: end; gap: 12px; margin-bottom: 16px; }
+.inverter-option-row input { min-width: 0; width: 100%; }
+@media (max-width: 600px) { .inverter-option-row { grid-template-columns: 1fr; padding-bottom: 16px; border-bottom: 1px solid #ccdcd1; } }

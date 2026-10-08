@@ -18,10 +18,10 @@ export default function Cart() {
   return (
     <section className="container section">
       <p className="eyebrow">ONE STEP CLOSER TO BETTER POWER</p>
-      <h1>Your quote basket</h1>
+      <h1>Your basket</h1>
       {!items.length ? (
         <EmptyState
-          title="Your quote basket is empty."
+          title="Your basket is empty."
           text="Find the right products for your home or business."
         >
           <Link to="/shop" className="button green">
@@ -32,11 +32,11 @@ export default function Cart() {
         <div className="cart-layout">
           <div>
             <div className="cart-toolbar">
-              <span>{count} items in your quote basket</span>
+              <span>{count} items in your basket</span>
               <button onClick={clear}>Clear basket</button>
             </div>
-            {items.map(({ product: p, quantity }) => (
-              <article className="cart-item" key={p.id}>
+            {items.map(({ product: p, quantity, key }) => (
+              <article className="cart-item" key={key}>
                 <Link to={`/product/${p.slug}`}>
                   <ProductImage src={p.images[0]} alt={p.name} />
                 </Link>
@@ -48,7 +48,7 @@ export default function Cart() {
                   <p>{money(p.price)} each</p>
                   <QuantitySelector
                     value={quantity}
-                    onChange={(q) => update(p.id, q)}
+                    onChange={(q) => update(key, q)}
                   />
                 </div>
                 <div className="cart-item-end">
@@ -57,7 +57,7 @@ export default function Cart() {
                   </strong>
                   <button
                     aria-label={`Remove ${p.name}`}
-                    onClick={() => remove(p.id)}
+                    onClick={() => remove(key)}
                   >
                     <Trash2 size={17} /> Remove
                   </button>
@@ -69,7 +69,7 @@ export default function Cart() {
             </Link>
           </div>
           <aside className="order-summary">
-            <h2>Request your quote</h2>
+            <h2>Complete your order</h2>
             <div>
               <span>Product total</span>
               <strong>
@@ -100,14 +100,14 @@ export default function Cart() {
               message={cartMessage(items, details)}
               className="button green full"
             >
-              Request quote on WhatsApp
+              Send order on WhatsApp
             </WhatsAppButton>
             <span className="summary-note">
               <ShieldCheck size={19} /> No payment is taken on this website.
             </span>
             <p>
-              Your products and enquiry details will be included. Send the message on WhatsApp to
-              request your quote.
+              Your products and order details will be included. Send the message on WhatsApp to
+              complete your order with our team.
             </p>
           </aside>
         </div>

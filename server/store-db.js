@@ -1,4 +1,5 @@
 import { createHmac } from "node:crypto";
+import { defaultInverterOptions } from "../src/utils/inverter-options.js";
 export class StoreError extends Error {
   constructor(status, message) {
     super(message);
@@ -100,6 +101,10 @@ export function database(env, fetcher = fetch) {
 export function unpackProduct(row) {
   return {
     ...row.data,
+    // Supply the owner's initial prices for the existing listing until its first admin save.
+    // An explicitly saved empty array opts out; never replace edited options.
+    ...(row.slug === "jf-hybrid-solar-inverter" && row.data.category === "Inverters" && row.data.inverterOptions == null
+      ? { inverterOptions: defaultInverterOptions, price: 180000 } : {}),
     id: row.id,
     slug: row.slug,
     published: row.published,

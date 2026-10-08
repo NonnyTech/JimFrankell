@@ -1,24 +1,11 @@
 import { createContext, useContext, useEffect, useRef, useState } from "react";
 import { products as seedProducts } from "../data/products.js";
 import { useCatalog } from "./CatalogContext.jsx";
+import { cartKey, inverterOptions, selectInverter, restoreItems } from "../utils/inverter-options.js";
 const CartContext = createContext(null);
 export const useCart = () => useContext(CartContext);
 export function restoreCart(value, products = seedProducts) {
-  if (!Array.isArray(value)) return [];
-  return products
-    .filter((p) => p.inStock)
-    .flatMap((p) => {
-      const quantity = value
-        .filter(
-          (i) =>
-            i &&
-            i.id === p.id &&
-            Number.isInteger(i.quantity) &&
-            i.quantity > 0,
-        )
-        .reduce((s, i) => s + i.quantity, 0);
-      return quantity ? [{ id: p.id, quantity: Math.min(quantity, 99) }] : [];
-    });
+  return restoreItems(value, products);
 }
 export function CartProvider({ children }) {
   const { products } = useCatalog();
@@ -34,7 +21,7 @@ export function CartProvider({ children }) {
                 Number.isInteger(i.quantity) &&
                 i.quantity > 0,
             )
-            .map((i) => ({ id: i.id, quantity: Math.min(i.quantity, 99) }))
+            .map((i) => ({ id: i.id, quantity: Math.min(i.quantity, 99), ...(typeof i.kva === "number" ? { kva: i.kva } : {}) }))
         : [];
     } catch {
       return [];
@@ -57,29 +44,31 @@ export function CartProvider({ children }) {
   useEffect(() => () => clearTimeout(timer.current), []);
   const add = (product, quantity = 1) => {
     if (!product.inStock) return;
-    setCart((c) => restoreCart([...c, { id: product.id, quantity }], products));
-    notify(`${product.name} added to quote basket`);
+    if (inverterOptions(product).length && !inverterOptions(product).some(o => o.kva === product.kva)) { notify("Please choose an inverter capacity first."); return; }
+    setCart((c) => restoreCart([...c, { id: product.id, quantity, ...(product.kva != null ? { kva: product.kva } : {}) }], products));
+    notify(`${product.name} added to basket`);
   };
   const update = (id, quantity) =>
     setCart((c) =>
       c.map((i) =>
-        i.id === id
+        cartKey(i) === id
           ? { ...i, quantity: Math.max(1, Math.min(99, quantity)) }
           : i,
       ),
     );
   const remove = (id) => {
-    setCart((c) => c.filter((i) => i.id !== id));
-    notify("Product removed from quote basket");
+    setCart((c) => c.filter((i) => cartKey(i) !== id));
+    notify("Product removed from basket");
   };
   const clear = () => {
     setCart([]);
-    notify("Quote basket cleared");
+    notify("Basket cleared");
   };
   const activeCart = restoreCart(cart, products);
   const items = activeCart.map((i) => ({
     ...i,
-    product: products.find((p) => p.id === i.id),
+    key: cartKey(i),
+    product: selectInverter(products.find((p) => p.id === i.id), i.kva),
   }));
   return (
     <CartContext.Provider

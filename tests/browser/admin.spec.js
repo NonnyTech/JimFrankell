@@ -175,7 +175,7 @@ test("dynamic product survives basket reload and feedback awaits approval on mob
   await expect(
     page.getByRole("heading", { name: "Live Camera", exact: true }),
   ).toBeVisible();
-  await page.getByRole("button", { name: "Add to quote", exact: true }).click();
+  await page.getByRole("button", { name: "Add to basket", exact: true }).click();
   await page.goto("/cart");
   await page.reload();
   await expect(page.locator(".cart-item")).toContainText("Live Camera");

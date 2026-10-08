@@ -1,10 +1,11 @@
 import { useState } from "react";
+import { inverterOptions, selectInverter } from "../utils/inverter-options.js";
 import { Link, useParams } from "react-router-dom";
 import { ShoppingBag, ShieldCheck } from "lucide-react";
 import { useCatalog } from "../context/CatalogContext.jsx";
 import { useCart } from "../context/CartContext.jsx";
 import { formatCurrency as money } from "../utils/currency.js";
-import { cartMessage, productMessage } from "../utils/whatsapp.js";
+import { productMessage } from "../utils/whatsapp.js";
 import {
   ProductImage,
   QuantitySelector,
@@ -19,6 +20,7 @@ export default function ProductDetails() {
   const { slug } = useParams();
   const p = products.find((p) => p.slug === slug);
   const [quantity, setQuantity] = useState(1);
+  const [selection, setSelection] = useState(null);
   const [image, setImage] = useState(0);
   const { add } = useCart();
   if (!p && loading)
@@ -28,6 +30,10 @@ export default function ProductDetails() {
       </div>
     );
   if (!p) return <NotFound />;
+  const options = inverterOptions(p);
+  const selected = options.find(o => o.kva === (selection?.id === p.id ? selection.kva : null));
+  const chosen = selectInverter(p, selected?.kva);
+  const ready = !options.length || !!selected;
   const buyingChecks = {
     "Solar Panels": [
       "Panel wattage and dimensions",
@@ -95,41 +101,35 @@ export default function ProductDetails() {
             {p.category} · {p.brand}
           </p>
           <h1>{p.name}</h1>
-          <span className={p.inStock ? "stock" : "unavailable"}>
-            ●{" "}
-            {p.inStock
-              ? p.stockLabel || "In stock"
-              : "On request — contact us for availability"}
-          </span>
+          {!p.inStock && <span className="unavailable">On request — contact us for availability</span>}
           <div className="detail-price">
-            {money(p.price)} {p.oldPrice && <del>{money(p.oldPrice)}</del>}
+            {options.length && !selected ? `From ${money(Math.min(...options.map(o => o.price)))}` : money(chosen.price)} {!options.length && p.oldPrice && <del>{money(p.oldPrice)}</del>}
           </div>
           <p>{p.shortDescription}</p>
           <p>
             Find the right power for your needs. Our team can help confirm
             compatibility, availability and delivery before you order.
           </p>
+          {options.length > 0 && <label className="inverter-choice">Choose inverter capacity (kVA)
+            <select value={selected?.kva ?? ""} onChange={e => setSelection({ id: p.id, kva: Number(e.target.value) })}>
+              <option value="" disabled>Select a capacity</option>
+              {options.map(o => <option key={o.kva} value={o.kva}>{o.kva} kVA — {money(o.price)}</option>)}
+            </select>
+            <span aria-live="polite">{selected ? `${selected.kva} kVA: ${money(selected.price)}` : "Select a capacity to see your price and add it to your basket."}</span>
+          </label>}
           <div className="detail-buy">
             <QuantitySelector value={quantity} onChange={setQuantity} />
             <button
               className="button green"
-              disabled={!p.inStock}
-              onClick={() => add(p, quantity)}
+              disabled={!p.inStock || !ready}
+              onClick={() => add(chosen, quantity)}
             >
-              <ShoppingBag size={18} /> Add to quote
+              <ShoppingBag size={18} /> Add to basket
             </button>
           </div>
-          {p.inStock && (
-            <WhatsAppButton
-              className="button outline full"
-              message={cartMessage([{ product: p, quantity }])}
-            >
-              Get a quote on WhatsApp
-            </WhatsAppButton>
-          )}
           <WhatsAppButton
             className="product-enquiry"
-            message={productMessage(p)}
+            message={productMessage(chosen)}
           >
             Ask about this product
           </WhatsAppButton>
