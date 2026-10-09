@@ -51,31 +51,39 @@ export function database(env, fetcher = fetch) {
   const rest = (path, options) => request(`/rest/v1/${path}`, options);
   const digest = (value) =>
     createHmac("sha256", key).update(value).digest("hex");
+  async function customer(token) {
+    if (!token) throw new StoreError(401, "Please sign in to continue.");
+    const response = await fetcher(`${origin}/auth/v1/user`, {
+      headers: {
+        apikey: env.SUPABASE_PUBLISHABLE_KEY,
+        Authorization: `Bearer ${token}`,
+      },
+      signal: AbortSignal.timeout(10000),
+    });
+    if (!response.ok)
+      throw new StoreError(
+        401,
+        "Your session has expired. Please sign in again.",
+      );
+    const user = await response.json();
+    if (!/^[a-f0-9-]{36}$/i.test(user.id || ""))
+      throw new StoreError(401, "Invalid session.");
+    return user;
+  }
   return {
     request,
     rest,
+    customer,
     async admin(token) {
-      if (!token) throw new StoreError(401, "Please sign in to continue.");
-      const response = await fetcher(`${origin}/auth/v1/user`, {
-        headers: {
-          apikey: env.SUPABASE_PUBLISHABLE_KEY,
-          Authorization: `Bearer ${token}`,
-        },
-        signal: AbortSignal.timeout(10000),
-      });
-      if (!response.ok)
-        throw new StoreError(
-          401,
-          "Your session has expired. Please sign in again.",
-        );
-      const user = await response.json();
-      if (!/^[a-f0-9-]{36}$/i.test(user.id || ""))
-        throw new StoreError(401, "Invalid session.");
+      const user = await customer(token);
       const admins = await rest(
         `store_admins?user_id=eq.${user.id}&select=user_id`,
       );
       if (!admins.length)
-        throw new StoreError(403, "Access restricted. This account does not have admin access. You must sign in with an authorised administrator account.");
+        throw new StoreError(
+          403,
+          "Access restricted. This account does not have admin access. You must sign in with an authorised administrator account.",
+        );
       return user;
     },
     async limit(identity, maximum, seconds) {
@@ -103,8 +111,11 @@ export function unpackProduct(row) {
     ...row.data,
     // Supply the owner's initial prices for the existing listing until its first admin save.
     // An explicitly saved empty array opts out; never replace edited options.
-    ...(row.slug === "jf-hybrid-solar-inverter" && row.data.category === "Inverters" && row.data.inverterOptions == null
-      ? { inverterOptions: defaultInverterOptions, price: 180000 } : {}),
+    ...(row.slug === "jf-hybrid-solar-inverter" &&
+    row.data.category === "Inverters" &&
+    row.data.inverterOptions == null
+      ? { inverterOptions: defaultInverterOptions, price: 180000 }
+      : {}),
     id: row.id,
     slug: row.slug,
     published: row.published,

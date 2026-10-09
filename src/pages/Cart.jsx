@@ -1,4 +1,5 @@
 import OrderCheckout from "../components/OrderCheckout.jsx";
+import { useCustomer } from "../context/CustomerContext.jsx";
 import { Link } from "react-router-dom";
 import { Trash2, ArrowLeft } from "lucide-react";
 import { useCart } from "../context/CartContext.jsx";
@@ -9,11 +10,34 @@ import {
   QuantitySelector,
 } from "../components/UI.jsx";
 export default function Cart() {
-  const { items, total, count, update, remove, clear } = useCart();
+  const { session } = useCustomer();
+  const {
+    items,
+    total,
+    count,
+    update,
+    remove,
+    clear,
+    cartBusy,
+    cartError,
+    reloadCart,
+    importGuest,
+  } = useCart();
   return (
     <section className="container section">
       <p className="eyebrow">ONE STEP CLOSER TO BETTER POWER</p>
       <h1>Your basket</h1>
+      {cartBusy && <p role="status">Loading or saving your basket?</p>}
+      {cartError && (
+        <p role="alert">
+          {cartError} <button onClick={reloadCart}>Reload saved basket</button>
+        </p>
+      )}
+      {importGuest && (
+        <button disabled={cartBusy || !!cartError} onClick={importGuest}>
+          Add items from this device?s guest basket
+        </button>
+      )}
       {!items.length ? (
         <EmptyState
           title="Your basket is empty."
@@ -63,7 +87,11 @@ export default function Cart() {
               <ArrowLeft size={17} /> Continue shopping
             </Link>
           </div>
-          <OrderCheckout items={items} total={total} />
+          <OrderCheckout
+            key={session?.user.id || "guest"}
+            items={items}
+            total={total}
+          />
         </div>
       )}
     </section>

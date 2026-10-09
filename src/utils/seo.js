@@ -5,6 +5,7 @@ export const renderRoutes = [
   ...publicRoutes,
   "/cart",
   "/admin",
+  "/account",
   ...products.map((p) => `/product/${p.slug}`),
   "/404",
 ];
@@ -54,6 +55,7 @@ export function pageSEO(
       "Solar Camera & Power Product FAQs",
       "Get answers about ordering solar security cameras, delivery enquiries, warranties, inverter selection and installation availability.",
     ],
+    "/account": ["My account", "Sign in to view your orders and saved basket."],
     "/admin": [
       "Store Administration",
       "Private product and customer feedback management.",

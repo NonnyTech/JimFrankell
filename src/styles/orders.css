@@ -1,13 +1,87 @@
-.order-checkout-form fieldset { border: 0; padding: 0; margin: 0; min-width: 0; display: grid; gap: 16px; }
-.order-checkout-form label { display: grid; gap: 8px; }
-.order-checkout-form input:not([type=checkbox]), .order-checkout-form textarea, .order-checkout-form select { width: 100%; min-width: 0; padding: 12px; min-height: 44px; border: 1px solid #cad9cf; border-radius: 8px; background: white; color: #133d35; font: inherit; font-size: 16px; }
-.order-checkout-form .order-consent { display: flex; align-items: start; font-size: 13px; }
-.order-consent input { flex-shrink: 0; margin-top: 3px; }
-.saved-order { overflow-wrap: anywhere; }
-.saved-order li { margin-bottom: 12px; }
-.admin-order { border-top: 1px solid #cad9cf; padding: 24px 0; overflow-wrap: anywhere; }
-.admin-order-items { list-style: none; padding: 0; }
-.admin-order-items li { display: flex; align-items: center; gap: 12px; margin: 12px 0; }
-.admin-order-items img { width: 64px; height: 64px; object-fit: contain; flex-shrink: 0; }
-.admin-order-items div { min-width: 0; }
-.admin-order select { font-size: 16px; min-height: 44px; }
+.order-checkout-form fieldset {
+  border: 0;
+  padding: 0;
+  margin: 0;
+  min-width: 0;
+  display: grid;
+  gap: 16px;
+}
+.order-checkout-form label {
+  display: grid;
+  gap: 8px;
+}
+.order-checkout-form input:not([type="checkbox"]),
+.order-checkout-form textarea,
+.order-checkout-form select {
+  width: 100%;
+  min-width: 0;
+  padding: 12px;
+  min-height: 44px;
+  border: 1px solid #cad9cf;
+  border-radius: 8px;
+  background: white;
+  color: #133d35;
+  font: inherit;
+  font-size: 16px;
+}
+.order-checkout-form .order-consent {
+  display: flex;
+  align-items: start;
+  font-size: 13px;
+}
+.order-consent input {
+  flex-shrink: 0;
+  margin-top: 3px;
+}
+.saved-order {
+  overflow-wrap: anywhere;
+}
+.saved-order li {
+  margin-bottom: 12px;
+}
+.admin-order {
+  border-top: 1px solid #cad9cf;
+  padding: 24px 0;
+  overflow-wrap: anywhere;
+}
+.admin-order-items {
+  list-style: none;
+  padding: 0;
+}
+.admin-order-items li {
+  display: flex;
+  align-items: center;
+  gap: 12px;
+  margin: 12px 0;
+}
+.admin-order-items img {
+  width: 64px;
+  height: 64px;
+  object-fit: contain;
+  flex-shrink: 0;
+}
+.admin-order-items div {
+  min-width: 0;
+}
+.admin-order select {
+  font-size: 16px;
+  min-height: 44px;
+}
+
+.account-form {
+  max-width: 440px;
+}
+.account-actions {
+  display: flex;
+  flex-wrap: wrap;
+  gap: 16px;
+  margin: 20px 0;
+  align-items: center;
+}
+.account-actions button {
+  min-height: 44px;
+  padding: 10px 16px;
+}
+.account-page {
+  overflow-wrap: anywhere;
+}

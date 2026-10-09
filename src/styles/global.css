@@ -2562,3 +2562,7 @@ textarea {
 .review-trap { display: none; }
 .catalog-alert { padding: 16px; text-align: center; background: #fff1e8; }
 @media(max-width:700px) { .reviews-section { grid-template-columns: 1fr; } }
+
+.header-account-greeting { display: grid; gap: 2px; max-width: 150px; min-width: 0; color: #133d35; font-size: 12px; line-height: 1.4; }
+.header-account-greeting strong { overflow: hidden; text-overflow: ellipsis; white-space: nowrap; }
+@media (max-width: 1280px) { .header-inner:has(.header-account-greeting) { flex-wrap: wrap; height: auto; padding-top: 12px; padding-bottom: 12px; } .header-inner:has(.header-account-greeting) .header-actions { width: 100%; justify-content: flex-end; } .header-account-greeting { margin-right: auto; max-width: 55%; } }

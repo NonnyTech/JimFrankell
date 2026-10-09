@@ -1,3 +1,4 @@
+import { CustomerProvider } from "./context/CustomerContext.jsx";
 import "@fontsource-variable/dm-sans/wght.css";
 import "@fontsource-variable/manrope/wght.css";
 import React from "react";
@@ -34,9 +35,11 @@ createRoot(document.getElementById("root")).render(
           initialProducts={window.__JF_CATALOG__?.products}
           initialLive={window.__JF_CATALOG__?.live}
         >
-          <CartProvider>
-            <App />
-          </CartProvider>
+          <CustomerProvider>
+            <CartProvider>
+              <App />
+            </CartProvider>
+          </CustomerProvider>
         </CatalogProvider>
       </BrowserRouter>
     </ErrorBoundary>

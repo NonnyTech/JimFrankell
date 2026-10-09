@@ -61,6 +61,20 @@ The home, shop, about, product pages and sitemap are rendered from the current d
 
 ## Product and feedback behaviour
 
+### Customer account setup
+
+1. Run `003_customer_accounts.sql` in the Supabase SQL Editor **after** migration 002. Existing guest orders remain unlinked.
+2. In Supabase Authentication settings, enable email/password signups and turn **Confirm email** off for immediate signup/sign-in. Do not disable password requirements. Registration uses only the public Supabase key; no admin permissions are granted.
+3. Add `https://jimfrankell.com/account` and your local `http://127.0.0.1:5173/account` to Authentication's allowed redirect URLs. Set the production Site URL to `https://jimfrankell.com`.
+4. Configure custom SMTP separately if customers should receive password-reset emails. Registration itself needs no email when confirmation is disabled.
+5. Deploy/restart the app. Test two different customer accounts: each should see only their own new orders and saved basket. Test guest checkout and an existing admin account too.
+
+The header's **My account** link offers registration, sign-in, password reset, order history and sign-out. Customer and admin browser sessions use separate storage keys. Customers cannot gain admin access by signing up or entering an admin email; the private admin allowlist still applies.
+
+Signed-in baskets are saved in Supabase with version checks. If another device changes the basket, reload it before editing. The guest basket stays separate on the device; use **Add items from this device’s guest basket** to copy it into an account. Quantities use the larger existing value for matching options, so repeated imports do not duplicate them.
+
+Order ownership is set from the verified authentication token, not from submitted email/user IDs. Do not automatically claim historical guest orders by email, particularly because registration emails are unverified. No live authentication setting or SQL migration is applied by the local code changes.
+
 ### Order tracking setup
 
 1. Open your Supabase project, choose **SQL Editor → New query**, paste the entire contents of `supabase/migrations/002_orders.sql`, and click **Run** once. Keep the existing `001_store.sql` setup; do not run it again.

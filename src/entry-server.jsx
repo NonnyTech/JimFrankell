@@ -1,3 +1,4 @@
+import { CustomerProvider } from "./context/CustomerContext.jsx";
 import React from "react";
 import { renderToString } from "react-dom/server";
 import { StaticRouter } from "react-router-dom";
@@ -8,9 +9,11 @@ export function render(path, products, live = false) {
   return renderToString(
     <StaticRouter location={path}>
       <CatalogProvider initialProducts={products} initialLive={live}>
-        <CartProvider>
-          <App />
-        </CartProvider>
+        <CustomerProvider>
+          <CartProvider>
+            <App />
+          </CartProvider>
+        </CustomerProvider>
       </CatalogProvider>
     </StaticRouter>,
   );

@@ -1,3 +1,4 @@
+import { customerResource } from "./customers.js";
 import { randomUUID } from "node:crypto";
 import { createOrder, adminOrders } from "./orders.js";
 import { products as seedProducts } from "../src/data/products.js";
@@ -45,7 +46,13 @@ export async function handleStore(req, env = process.env, fetcher = fetch) {
         const rows = await db.rest(
           `store_reviews?status=eq.approved&select=id,name,rating,message,created_at,store_products!inner(slug,product_name:data->>name)&store_products.published=eq.true&order=created_at.desc,id.desc&limit=500&offset=${offset}`,
         );
-        reviews.push(...rows.map(({ store_products, ...review }) => ({ ...review, productName: store_products.product_name, productSlug: store_products.slug })));
+        reviews.push(
+          ...rows.map(({ store_products, ...review }) => ({
+            ...review,
+            productName: store_products.product_name,
+            productSlug: store_products.slug,
+          })),
+        );
         if (rows.length < 500) break;
       }
       return success({ reviews, enabled: true });
@@ -119,17 +126,24 @@ export async function handleStore(req, env = process.env, fetcher = fetch) {
       });
       return success(
         {
-          message:
-            "Thank you for sharing your feedback.",
+          message: "Thank you for sharing your feedback.",
         },
         201,
       );
     }
-    if (resource === "orders" && method === "POST")
-      return success({ order: await createOrder(db, body, req.ip) }, 201);
+    if (["my-orders", "my-cart"].includes(resource))
+      return success(await customerResource(db, req, body));
+    if (resource === "orders" && method === "POST") {
+      const customer = req.token ? await db.customer(req.token) : null;
+      return success(
+        { order: await createOrder(db, body, req.ip, customer?.id || null) },
+        201,
+      );
+    }
     // Every admin read and write authenticates with Supabase and checks a private allowlist.
     const user = await db.admin(req.token);
-    if (resource === "admin-orders") return success(await adminOrders(db, req, body, user));
+    if (resource === "admin-orders")
+      return success(await adminOrders(db, req, body, user));
     if (resource === "admin-products" && method === "GET") {
       const offset = Math.max(0, Number(req.query.offset) || 0);
       return success({

@@ -1,3 +1,4 @@
+import Account from "./pages/Account.jsx";
 import { lazy, Suspense } from "react";
 import { Routes, Route, useLocation } from "react-router-dom";
 import Metadata from "./components/Metadata.jsx";
@@ -36,6 +37,7 @@ export default function App() {
             element={<ProductDetails key={location.pathname} />}
           />
           <Route path="cart" element={<Cart />} />
+          <Route path="account" element={<Account />} />
           <Route path="about" element={<About />} />
           <Route path="contact" element={<Contact />} />
           <Route path="faq" element={<FAQ />} />

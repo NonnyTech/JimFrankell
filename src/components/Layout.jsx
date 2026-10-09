@@ -18,6 +18,7 @@ import {
 } from "lucide-react";
 import { businessConfig as b } from "../config/businessConfig.js";
 import { useCart } from "../context/CartContext.jsx";
+import { useCustomer } from "../context/CustomerContext.jsx";
 import { WhatsAppButton } from "./UI.jsx";
 export function Logo() {
   return (
@@ -32,6 +33,7 @@ export function Logo() {
 }
 export default function Layout() {
   const { count } = useCart();
+  const { session } = useCustomer();
   const [menu, setMenu] = useState(false);
   const [search, setSearch] = useState(false);
   const location = useLocation();
@@ -62,6 +64,7 @@ export default function Layout() {
               ["/about", "About Us"],
               ["/contact", "Contact"],
               ["/faq", "FAQ"],
+              ["/account", "My account"],
               ["/admin", "Admin login"],
             ].map(([to, label]) => (
               <NavLink key={to} end={to === "/"} to={to}>
@@ -70,6 +73,9 @@ export default function Layout() {
             ))}
           </nav>
           <div className="header-actions">
+            {session && <Link className="header-account-greeting" to="/account" title={`Hello, ${session.user.email}`}>
+              <span>Hello,</span><strong>{session.user.email}</strong>
+            </Link>}
             <button
               className="icon-button"
               aria-label="Search products"
